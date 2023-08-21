@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>look the picture</h1>
+    <form action="/addProduct" method="post">
+        <input type="text" placeholder="name" name="name">
+        <input type="text" placeholder="address" name="address">
+        <input type="text" placeholder="price" name="price">
+        <input type="text" placeholder="quantity" name="quantity">
+        <input type="text" placeholder="mobile" name="mobile">
+        <button type="submit">add Product</button>
+        <button type="button" class="btn btn-primary btn-lg">Large button</button>
+        <button type="button" class="btn btn-secondary btn-lg">Large button</button>
+
+
+     </form>
+     <div id="product"></div> 
+     <div id="update"></div> 
+    <script>
+    // fetch("/product")
+    // .then(res => res.json())
+    // .then(product => {
+    //   console.log(product)
+    //   const container = document.getElementById('product');
+      
+    //   console.log(container);
+    //   product.forEach(pd =>{
+    //     const p = document.createElement('p');
+    //     // p.innerHTML = `name: ${pd.name}, price: ${pd.price}, quantity: {pd.quantity} <button onclick='deleteProduct("${pd._id}")'>delete</button> `;
+    //     container.appendChild(p);
+    //   });
+    //   })
+      function loadAllProducts(){
+        fetch("/product")
+    .then(res => res.json())
+    .then(product => {
+      console.log(product)
+      const container = document.getElementById('product');
+      container.innerHTML = '';
+      
+      console.log(container);
+      product.forEach(pd => {
+        const p = document.createElement('p');
+        p.innerHTML = `name: ${pd.name}, address: ${pd.address}, price: ${pd.price}, quantity: ${pd.quantity}, mobile: ${pd.mobile}
+        <button onclick="loadProduct('${pd._id}')">update</button>
+        <button onclick="deleteProduct(event,'${pd._id}')">delete</button> `;
+        container.appendChild(p);
+      });
+      })
+      }
+      loadAllProducts();
+
+      //update product
+function loadProduct(id){
+  fetch(`product/${id}`)
+  .then(res => res.json())
+  .then(data => {
+    const update = document.getElementById('update');
+    update.innerHTML =` 
+    <h3>Update: ${data._id}</h3>
+    name: <input type ="text" value="${data.name}" id="name">
+    <br>
+    address: <input type ="text" value="${data.address}" id="address">
+    <br>
+    price: <input type ="text" value="${data.price}" id="price">
+    <br>
+    quantity: <input type ="text" value="${data.quantity}" id="quantity">
+    <br>
+    mobile: <input type ="text" value="${data.mobile}" id="mobile">
+    <br>
+    
+    <button onclick="updateProduct('${data._id}')">submit</button>
+    `;
+  })
+}
+
+    function updateProduct(id){
+    
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    const price = document.getElementById('price').value;
+    const quantity = document.getElementById('quantity').value;
+    const mobile = document.getElementById('mobile').value;
+    const product = {id, name, address, price, quantity, mobile};
+    fetch(`/update/${id}`,{
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(product)
+    })
+    
+    .then(res => res.json())
+    .then(result => {
+      if(result){
+        loadAllProducts();
+      }
+      // console.log('updated');
+    })
+  }
+
+ //update product
+//delet
+      function deleteProduct(event, id){
+       
+        fetch(`/delete/${id}` ,{
+          method:'DELETE'
+        })
+        .then(res => res.json())
+        .then(result => {
+          // console.log('delete successfully')
+          if(result){
+            event.target.parentNode.style.display = "none";
+          }
+         
+        })
+      }
+      //delet
+    </script>
+
+     <!-- <div id="mamun">
+
+    </div> 
+    <script>
+    fetch("/mamun")
+    .then(res => res.json())
+    .then(mamun => {
+      console.log(mamun)
+      const container = document.getElementById('mamun');
+      
+      console.log(container);
+      mamun.forEach(pd =>{
+        const p = document.createElement('p');
+        p.innerHTML = `${pd.name} price: ${pd.price} quantity {pd.quantity}`;
+       container.appendChild(p);
+      });
+      })
+    </script> -->
+
+</body>
+</html>
